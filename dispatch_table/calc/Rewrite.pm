@@ -24,6 +24,7 @@ sub preprocess_table {
 
 	for my $re (keys %$table) {
 		my $val = $table->{$re};
+		my $value = $val->[1];
 		delete $table->{$re};
 		$table->{compile_regexps($re, $reg_subs)} = $val;
 	}
@@ -33,7 +34,7 @@ sub create_rewriter {
 	my ($table, %options) = @_;
 	my $preprocess_line = $options{preprocess_line};
 
-	preprocess_table($table, $options{preprocess_table}) if $options{preprocess_table};
+	preprocess_table($table, $options{preprocess_table});
 	
 	sub {
 		my $line = @_ ? $_[0] : $_;
@@ -43,7 +44,14 @@ sub create_rewriter {
 			$old = $line;
 				
 			for my $k (sort { $table->{$a}->[0] <=> $table->{$b}->[0] } keys %$table) {
-				$line =~ s/$k/$table->{$k}[1]()/ge;
+				my $value = $table->{$k}[1];
+				if(UNIVERSAL::isa($value, 'CODE')) {
+					$line =~ s/$k/$value->()/ge;
+				} else {
+					$value =~ s#/#\\/#g; # Escape / in the replacement part
+					eval "\$line =~ s/$k/$value/g";
+					warn "$@" if $@;
+				}
 			}
 		} while($old ne $line);
 		$_ = $line unless @_;

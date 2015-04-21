@@ -46,6 +46,9 @@ for my $f (qw(mdc mmc min max)) {
 
 my $binding = {};
 my $table = {
+	q{zero} => [1, '0'],
+	q{boo} => [1, 'foo'],
+	q{inv \( NUMBER \)}                => [1, '1/($1)'],
     q{\$(ID)}                          => [1, sub { exists $binding->{$1} ? $binding->{$1} : $& }],
     q{(ID)\((NUMBER(?: , NUMBER)*)\)}  => [2, sub { exists $optable->{$1} ? $optable->{$1}->(split /\s*,\s*/, $2) : $& }],
     q{\( (NUMBER) \)}                  => [2, sub { $1 }],
@@ -54,7 +57,7 @@ my $table = {
     q{NUMBER ([*/%]) NUMBER}           => [5, sub { $optable->{$2}->($1, $3) }],
     q{NUMBER ([+-]) NUMBER}            => [6, sub { $optable->{$2}->($1, $3) }],
     q{(ID) = (NUMBER)}                 => [7, sub { $binding->{$1} = $2; return $& }],
-}
+};
 
 my $prep = {
 	NUMBER  => '(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)',
