@@ -36,7 +36,7 @@ sub create_rewriter {
 	preprocess_table($table, $options{preprocess_table}) if $options{preprocess_table};
 	
 	sub {
-		my $line = shift;
+		my $line = @_ ? $_[0] : $_;
 		$line = $preprocess_line->($line) if defined $preprocess_line;
 		my $old;
 		do {
@@ -46,6 +46,7 @@ sub create_rewriter {
 				$line =~ s/$k/$table->{$k}[1]()/ge;
 			}
 		} while($old ne $line);
+		$_ = $line unless @_;
 		$line;
 	}
 }
