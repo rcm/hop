@@ -1,0 +1,8 @@
+DEFINE	CHDIR	chdir($_[0])
+DEFINE	PUSHDIR	use Cwd; push @dirs, cwd; chdir($_[0])
+DEFINE	POPDIR	chdir(pop @dirs);
+DEFINE	PWD		use Cwd; printf "%s\n", cwd
+A		2
+DEFINE	B		$a = $_[0] * 2; print "$a\n"
+B		4
+INCLUDE	test2

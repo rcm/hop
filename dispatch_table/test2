@@ -1,0 +1,9 @@
+DEFINE	CHDIR	use Cwd; printf "switching to %s from %s\n", $_[0], cwd; chdir($_[0])
+B		7
+PWD
+PUSHDIR	/tmp
+CHDIR	/home/rui
+PWD
+POPDIR
+PWD
+ZBR
